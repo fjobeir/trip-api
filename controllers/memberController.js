@@ -16,7 +16,7 @@ var store = async function(req, res, next) {
     var email = req.body.email.trim()
     var phone = req.body.phone.trim()
     var gender = req.body.gender
-    var password =cryptPassword(req.body.password.trim())
+    var password = req.body.password.trim()
     if (name.length < 3) {
         result.success = false
         result.messages.push('Please check your name')
@@ -41,6 +41,7 @@ var store = async function(req, res, next) {
         res.send(result)
         return
     }
+    password = cryptPassword(password)
     var newMember = await models.Member.create({
         name: name,
         email: email,
