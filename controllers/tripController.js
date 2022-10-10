@@ -63,14 +63,14 @@ var show = async function (req, res, next) {
     // var id = req.params.id 
     var trip = await models.Trip.findByPk(req.params.id, {
         include: [
-            models.subscription
+            models.Member
         ]
     })
     if (trip) {
         result.data = trip
     } else {
         res.status(404)
-        result.success.push('Please Provide a valid ID')
+        result.messages.push('Please Provide a valid ID')
     }
     res.send(result)
 }

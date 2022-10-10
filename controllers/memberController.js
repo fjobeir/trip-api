@@ -1,12 +1,8 @@
 var bcrypt = require('bcryptjs')
 var models = require('../models')
+var authService = require('../services/authService')
 
 var store = async function (req, res, next) {
-    function cryptPassword(plainTextPassword) {
-        var salt = bcrypt.genSaltSync(10);
-        var hash = bcrypt.hashSync(plainTextPassword, salt);
-        return hash
-    }
     var result = {
         success: true,
         messages: [],
@@ -41,16 +37,26 @@ var store = async function (req, res, next) {
         res.send(result)
         return
     }
-    password = cryptPassword(password)
-    var newMember = await models.Member.create({
-        name: name,
-        email: email,
-        phone: phone,
-        gender: gender,
-        password: password
+    password = authService.hashPassword(password)
+    var [member, created] = await models.Member.findOrCreate({
+        where: {
+            email: email
+        },
+        defaults: {
+            name: name,
+            // email: email,
+            phone: phone,
+            gender: gender,
+            password: password
+        }
     })
-    result.data = newMember
-    result.messages.push('Member has been created successfully')
+    if (created) {
+        result.messages.push('Member has been created successfully')
+    } else {
+        result.success = false
+        result.messages.push('You are already registered')
+    }
+    result.data = member
     res.send(result)
 }
 var show = async function (req, res, next) {
@@ -91,11 +97,20 @@ var index = async function (req, res, next) {
     res.send(result)
 }
 var destroy = async function (req, res, next) {
+    
     var result = {
         success: true,
         data: {},
         messages: []
     }
+
+    // console.log(req.headers.authorization)
+    var token = req.headers.authorization.split(' ')
+    var payload = authService.decryptToken(token[1])
+    console.log(payload)
+
+    // to be continued ...
+
     var id = req.params.id
     var deleted = await models.Member.destroy({
         where: {
@@ -168,9 +183,9 @@ var login = async function (req, res, next) {
     var result = {
         success: true,
         messages: [],
-        data: {}
+        data: {},
+        token: null
     }
-
     var email = req.body.email.trim()
     var password = req.body.password.trim()
     var loggedMember = await models.Member.findOne({
@@ -181,8 +196,7 @@ var login = async function (req, res, next) {
         if (!user) {
             return false
         } else {
-            let passwordMatch = bcrypt.compareSync(password, user.password)
-            if (passwordMatch) {
+            if (authService.comparePassword(password, user.password)) {
                 return user
             } else {
                 return false
@@ -190,7 +204,8 @@ var login = async function (req, res, next) {
         }
     })
     if (loggedMember) {
-        result.data = loggedMember
+        result.data = loggedMember,
+        result.token = authService.generateToken(loggedMember.id, 'member')
     } else {
         result.success = false
         result.messages.push('Wrong email or password')
