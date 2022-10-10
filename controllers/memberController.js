@@ -1,12 +1,12 @@
 var bcrypt = require('bcryptjs')
 var models = require('../models')
 
-var store = async function(req, res, next) {
-    function cryptPassword (plainTextPassword) {
+var store = async function (req, res, next) {
+    function cryptPassword(plainTextPassword) {
         var salt = bcrypt.genSaltSync(10);
         var hash = bcrypt.hashSync(plainTextPassword, salt);
         return hash
-    } 
+    }
     var result = {
         success: true,
         messages: [],
@@ -53,14 +53,18 @@ var store = async function(req, res, next) {
     result.messages.push('Member has been created successfully')
     res.send(result)
 }
-var show = async function(req, res, next) {
+var show = async function (req, res, next) {
     var result = {
         success: true,
         data: {},
         messages: []
     }
     var id = req.params.id
-    var member = await models.Member.findByPk(id)
+    var member = await models.Member.findByPk(id, {
+        include: [
+            models.Trip
+        ]
+    })
     if (member) {
         result.data = member
     } else {
@@ -70,7 +74,7 @@ var show = async function(req, res, next) {
     }
     res.send(result)
 }
-var index = async function(req, res, next) {
+var index = async function (req, res, next) {
     var result = {
         success: true,
         data: {},
@@ -86,7 +90,7 @@ var index = async function(req, res, next) {
     }
     res.send(result)
 }
-var destroy = async function(req, res, next) {
+var destroy = async function (req, res, next) {
     var result = {
         success: true,
         data: {},
@@ -108,7 +112,7 @@ var destroy = async function(req, res, next) {
     res.send(result)
 }
 
-var update = async function(req, res, next) {
+var update = async function (req, res, next) {
     var result = {
         success: true,
         messages: [],
@@ -160,7 +164,7 @@ var update = async function(req, res, next) {
     res.send(result)
 }
 
-var login = async function(req, res, next) {
+var login = async function (req, res, next) {
     var result = {
         success: true,
         messages: [],
@@ -174,11 +178,11 @@ var login = async function(req, res, next) {
             email: email,
         }
     }).then((user) => {
-        if(!user) {
+        if (!user) {
             return false
         } else {
             let passwordMatch = bcrypt.compareSync(password, user.password)
-            if(passwordMatch) {
+            if (passwordMatch) {
                 return user
             } else {
                 return false
