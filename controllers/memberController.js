@@ -1,6 +1,12 @@
+var bcrypt = require('bcryptjs')
 var models = require('../models')
 
 var store = async function(req, res, next) {
+    function cryptPassword (plainTextPassword) {
+        var salt = bcrypt.genSaltSync(10);
+        var hash = bcrypt.hashSync(plainTextPassword, salt);
+        return hash
+    } 
     var result = {
         success: true,
         messages: [],
@@ -10,7 +16,7 @@ var store = async function(req, res, next) {
     var email = req.body.email.trim()
     var phone = req.body.phone.trim()
     var gender = req.body.gender
-    var password = req.body.password.trim()
+    var password =cryptPassword(req.body.password.trim())
     if (name.length < 3) {
         result.success = false
         result.messages.push('Please check your name')
@@ -165,7 +171,17 @@ var login = async function(req, res, next) {
     var loggedMember = await models.Member.findOne({
         where: {
             email: email,
-            password: password
+        }
+    }).then((user) => {
+        if(!user) {
+            return false
+        } else {
+            let passwordMatch = bcrypt.compareSync(password, user.password)
+            if(passwordMatch) {
+                return user
+            } else {
+                return false
+            }
         }
     })
     if (loggedMember) {
