@@ -8,12 +8,12 @@ var store = async function(req, res, next) {
     })
 }
 var show = async function(req, res, next) {
-    var abdulmalek = await models.Subscription.findByPk(req.params.id, {
+    var subscription = await models.Subscription.findByPk(req.params.id, {
         include: [
             models.Payment
         ]
     })
-    res.send(abdulmalek)
+    res.send(subscription)
 }
 
 module.exports = {
