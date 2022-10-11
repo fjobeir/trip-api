@@ -4,6 +4,8 @@ var { store, show, index, destroy, update, login } = require('../controllers/adm
 var isAuthenticated = require('../middlewares/isAuthenticated')
 var isAdmin = require('../middlewares/isAdmin')
 
+// just to see the clone
+
 router.post('/', isAuthenticated, isAdmin, store)
 router.get('/:id', show)
 router.get('/', index)
