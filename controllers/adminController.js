@@ -1,4 +1,3 @@
-var bcrypt = require('bcryptjs')
 var models = require('../models')
 var authService = require('../services/authService')
 
@@ -10,8 +9,6 @@ var store = async function (req, res, next) {
     }
     var name = req.body.name.trim()
     var email = req.body.email.trim()
-    var phone = req.body.phone.trim()
-    var gender = req.body.gender
     var password = req.body.password.trim()
     if (name.length < 3) {
         result.success = false
@@ -21,42 +18,31 @@ var store = async function (req, res, next) {
         result.success = false
         result.messages.push('Please check your email')
     }
-    if (phone.length < 3) {
-        result.success = false
-        result.messages.push('Please check your phone')
-    }
     if (password.length < 3) {
         result.success = false
         result.messages.push('Please check your password')
-    }
-    if (gender != '0' && gender != '1') {
-        result.success = false
-        result.messages.push('Please check your gender')
     }
     if (!result.success) {
         res.send(result)
         return
     }
     password = authService.hashPassword(password)
-    var [member, created] = await models.Member.findOrCreate({
+    var [admin, created] = await models.Admin.findOrCreate({
         where: {
             email: email
         },
         defaults: {
             name: name,
-            // email: email,
-            phone: phone,
-            gender: gender,
             password: password
         }
     })
     if (created) {
-        result.messages.push('Member has been created successfully')
+        result.messages.push('Admin has been created successfully')
     } else {
         result.success = false
         result.messages.push('You are already registered')
     }
-    result.data = member
+    result.data = admin
     res.send(result)
 }
 var show = async function (req, res, next) {
@@ -66,13 +52,13 @@ var show = async function (req, res, next) {
         messages: []
     }
     var id = req.params.id
-    var member = await models.Member.findByPk(id, {
+    var admin = await models.Admin.findByPk(id, {
         include: [
             models.Trip
         ]
     })
-    if (member) {
-        result.data = member
+    if (admin) {
+        result.data = admin
     } else {
         res.status(404)
         result.success = false
@@ -86,9 +72,9 @@ var index = async function (req, res, next) {
         data: {},
         messages: []
     }
-    var members = await models.Member.findAll()
-    if (Array.isArray(members)) {
-        result.data = members
+    var admins = await models.Admin.findAll()
+    if (Array.isArray(admins)) {
+        result.data = admins
     } else {
         res.status(404)
         res.success = false
@@ -103,14 +89,14 @@ var destroy = async function (req, res, next) {
         messages: []
     }
     var id = req.params.id
-    var deleted = await models.Member.destroy({
+    var deleted = await models.Admin.destroy({
         where: {
             id: id
         }
     });
     if (deleted) {
         res.status(200)
-        result.messages.push('Member has been deleted')
+        result.messages.push('Admin has been deleted')
     } else {
         res.status(404)
         result.success = false
@@ -127,8 +113,6 @@ var update = async function (req, res, next) {
     }
     var name = req.body.name.trim()
     var email = req.body.email.trim()
-    var phone = req.body.phone.trim()
-    var gender = req.body.gender
     var password = req.body.password.trim()
     if (name.length < 3) {
         result.success = false
@@ -138,36 +122,26 @@ var update = async function (req, res, next) {
         result.success = false
         result.messages.push('Please check your email')
     }
-    if (phone.length < 3) {
-        result.success = false
-        result.messages.push('Please check your phone')
-    }
     if (password.length < 3) {
         result.success = false
         result.messages.push('Please check your password')
-    }
-    if (gender != '0' && gender != '1') {
-        result.success = false
-        result.messages.push('Please check your gender')
     }
     if (!result.success) {
         res.send(result)
         return
     }
     var id = req.params.id
-    var updatedMember = await models.Member.update({
+    var updatedAdmin = await models.Admin.update({
         name: name,
         email: email,
-        phone: phone,
-        gender: gender,
         password: password
     }, {
         where: {
             id
         }
     })
-    result.data = updatedMember
-    result.messages.push('Member has been updated successfully')
+    result.data = updatedAdmin
+    result.messages.push('Admin has been updated successfully')
     res.send(result)
 }
 
@@ -180,7 +154,7 @@ var login = async function (req, res, next) {
     }
     var email = req.body.email.trim()
     var password = req.body.password.trim()
-    var loggedMember = await models.Member.findOne({
+    var loggedAdmin = await models.Admin.findOne({
         where: {
             email: email,
         }
@@ -195,9 +169,9 @@ var login = async function (req, res, next) {
             }
         }
     })
-    if (loggedMember) {
-        result.data = loggedMember,
-        result.token = authService.generateToken(loggedMember.id, 'member')
+    if (loggedAdmin) {
+        result.data = loggedAdmin,
+        result.token = authService.generateToken(loggedAdmin.id, 'admin')
     } else {
         result.success = false
         result.messages.push('Wrong email or password')
