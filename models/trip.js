@@ -14,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: 'tripId',
 				through: 'Subscriptions'
 			})
+			Trip.hasMany(models.Photo, {
+				foreignKey: 'photoableId',
+				constraints: false,
+				scope: {
+					photoableType: 'trip'
+				}
+			});
 		}
 	}
 	Trip.init({

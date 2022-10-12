@@ -63,7 +63,8 @@ var show = async function (req, res, next) {
     // var id = req.params.id 
     var trip = await models.Trip.findByPk(req.params.id, {
         include: [
-            models.Member
+            models.Member,
+            models.Photo
         ]
     })
     if (trip) {

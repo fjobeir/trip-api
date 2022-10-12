@@ -14,6 +14,13 @@ module.exports = (sequelize, DataTypes) => {
 				foreignKey: 'memberId',
 				through: 'Subscriptions'
 			})
+			Member.hasMany(models.Photo, {
+				foreignKey: 'photoableId',
+				constraints: false,
+				scope: {
+					photoableType: 'member'
+				}
+			});
 		}
 	}
 	Member.init({
