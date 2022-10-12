@@ -1,6 +1,6 @@
 var models = require('../models')
 var store = async (req, res, next) => {
-
+    
     var response = {
         succeess: true,
         massages: [],
@@ -29,10 +29,21 @@ var store = async (req, res, next) => {
         return
     }
 
+    var tripPhotos = []
+    if (req.files.length) {
+        for (var i = 0; i < req.files.length; i++) {
+            tripPhotos.push({
+                file: req.files[i].filename
+            })
+        }
+    }
     var newTrip = await models.Trip.create({
         title: title,
         cost: cost,
         date: date,
+        Photos: tripPhotos
+    }, {
+        include: models.Photo
     })
     response.data = newTrip
     response.massages.push('done')
