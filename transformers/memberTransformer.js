@@ -1,6 +1,8 @@
 var memberTransformer = function(member) {
-    delete member.dataValues.password
-    if (member.Photos) {
+    if (member?.dataValues?.password) {
+        delete member?.dataValues?.password
+    }
+    if (member?.Photos) {
         member.Photos = photosTransformer(member.Photos)
     }
     return member

@@ -17,7 +17,13 @@ const authService = {
         }, '1234567890')
     },
     decryptToken: function(token) {
-        return jwt.verify(token, '1234567890')
+        var payload = null
+        try {
+            payload = jwt.verify(token, '1234567890')
+        } catch (e) {
+
+        }
+        return payload
     }
 }
 
