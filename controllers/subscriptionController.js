@@ -1,21 +1,13 @@
 var models = require('../models')
 
 var store = async function (req, res, next) {
-    // بده تحسين - وظيفة - homework to improve it
-    // await models.Subscription.create({
-    //     memberId: req.body.memberId,
-    //     tripId: req.body.tripId
-    // })
     var response = {
         succeess: true,
         massages: [],
         data: {}
     }
-
     var memberId = req.body.memberId
     var tripId = req.body.tripId
-
-
     if (memberId < 1) {
         response.succeess = false
         response.massages.push('memberId is not true')
@@ -28,7 +20,6 @@ var store = async function (req, res, next) {
         res.send(response)
         return
     }
-
     var newSub = await models.Subscription.create({
         memberId: memberId,
         tripId: tripId
@@ -39,12 +30,6 @@ var store = async function (req, res, next) {
     res.send(response)
 }
 var show = async function (req, res, next) {
-    // var abdulmalek = await models.Subscription.findByPk(req.params.id, {
-    //     include: [
-    //         models.Payment
-    //     ]
-    // })
-    // res.send(abdulmalek)
     var result = {
         success: true,
         data: {},
@@ -114,11 +99,11 @@ var update = async function (req, res, next) {
     var tripId = req.body.tripId
 
 
-    if (memberId.length < 0) {
+    if (memberId < 1) {
         response.success = false
         response.massages.push('memberId is not true')
     }
-    if (tripId.length < 0) {
+    if (tripId < 1) {
         response.success = false
         response.massages.push('tripId is not true')
     }
