@@ -1,4 +1,5 @@
 var models = require('../models')
+const { tripTransformer, tripsTransformer } = require('../transformers/tripTransformer')
 var store = async (req, res, next) => {
     
     var response = {
@@ -45,11 +46,11 @@ var store = async (req, res, next) => {
     }, {
         include: models.Photo
     })
-    response.data = newTrip
+    response.data = tripTransformer(newTrip)
     response.massages.push('done')
     res.send(response)
 }
-var index = async function (req, res, nex) {
+var index = async function (req, res, next) {
     var result = {
         success: true,
         data: {},
@@ -57,7 +58,7 @@ var index = async function (req, res, nex) {
     }
     var trips = await await models.Trip.findAll()
     if (Array.isArray(trips)) {
-        result.data = trips
+        result.data = tripsTransformer(trips)
     } else {
         res.status(404)
         res.success = false
@@ -71,7 +72,7 @@ var show = async function (req, res, next) {
         data: {},
         messages: []
     }
-    
+
     var trip = await models.Trip.findByPk(req.params.id, {
         include: [
             models.Member,
@@ -79,14 +80,14 @@ var show = async function (req, res, next) {
         ]
     })
     if (trip) {
-        result.data = trip
+        result.data = tripTransformer(trip)
     } else {
         res.status(404)
         result.messages.push('Please Provide a valid ID')
     }
     res.send(result)
 }
-var destroy = async function (req, res, nex) {
+var destroy = async function (req, res, next) {
     var result = {
         success: true,
         data: {},
@@ -146,7 +147,7 @@ var update = async (req, res, next) => {
             id
         }
     })
-    response.data = updateTrip
+    response.data = tripTransformer(updateTrip)
     response.massages.push('done')
     res.send(response)
 }

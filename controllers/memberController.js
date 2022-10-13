@@ -1,6 +1,7 @@
 var bcrypt = require('bcryptjs')
 var models = require('../models')
 var authService = require('../services/authService')
+var {memberTransformer, membersTransformer} = require('../transformers/memberTransformer')
 
 var store = async function (req, res, next) {
     var result = {
@@ -65,7 +66,7 @@ var store = async function (req, res, next) {
         result.success = false
         result.messages.push('You are already registered')
     }
-    result.data = member
+    result.data = memberTransformer(member)
     res.send(result)
 }
 var show = async function (req, res, next) {
@@ -81,7 +82,7 @@ var show = async function (req, res, next) {
         ]
     })
     if (member) {
-        result.data = member
+        result.data = memberTransformer(member)
     } else {
         res.status(404)
         result.success = false
@@ -97,7 +98,7 @@ var index = async function (req, res, next) {
     }
     var members = await models.Member.findAll()
     if (Array.isArray(members)) {
-        result.data = members
+        result.data = membersTransformer(members)
     } else {
         res.status(404)
         res.success = false
@@ -175,7 +176,7 @@ var update = async function (req, res, next) {
             id
         }
     })
-    result.data = updatedMember
+    result.data = memberTransformer(updatedMember)
     result.messages.push('Member has been updated successfully')
     res.send(result)
 }
@@ -205,7 +206,7 @@ var login = async function (req, res, next) {
         }
     })
     if (loggedMember) {
-        result.data = loggedMember,
+        result.data = memberTransformer(loggedMember),
         result.token = authService.generateToken(loggedMember.id, 'member')
     } else {
         result.success = false

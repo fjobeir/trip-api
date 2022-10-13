@@ -16,11 +16,11 @@ var store = async function (req, res, next) {
     var tripId = req.body.tripId
 
 
-    if (memberId.length < 0) {
+    if (memberId < 1) {
         response.succeess = false
         response.massages.push('memberId is not true')
     }
-    if (tripId.length < 0) {
+    if (tripId < 1) {
         response.succeess = false
         response.massages.push('tripId is not true')
     }
