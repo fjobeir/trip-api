@@ -37,6 +37,14 @@ var store = async function (req, res, next) {
         res.send(result)
         return
     }
+    var memberPhotos = []
+    if (req.files.length) {
+        for (var i =0; i < req.files.length; i++) {
+            memberPhotos.push({
+                file: req.files[i].filename
+            })
+        }
+    }
     password = authService.hashPassword(password)
     var [member, created] = await models.Member.findOrCreate({
         where: {
@@ -48,7 +56,8 @@ var store = async function (req, res, next) {
             phone: phone,
             gender: gender,
             password: password
-        }
+        },
+        include: [models.Photo]
     })
     if (created) {
         result.messages.push('Member has been created successfully')
