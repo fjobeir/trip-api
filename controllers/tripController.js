@@ -99,7 +99,7 @@ var destroy = async function (req, res, next) {
         }
     });
     if (deleted) {
-        // result.data=trip
+        result.messages.push('Trip has been deleted')
     } else {
         res.status(404)
         result.success.push('Please try again')
