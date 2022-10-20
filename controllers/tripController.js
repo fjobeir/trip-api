@@ -4,7 +4,7 @@ var store = async (req, res, next) => {
     
     var response = {
         succeess: true,
-        massages: [],
+        messages: [],
         data: {}
     }
 
@@ -14,15 +14,15 @@ var store = async (req, res, next) => {
 
     if (!title || title?.length < 3) {
         response.succeess = false
-        response.massages.push('The title length should be more than 2')
+        response.messages.push('The title length should be more than 2')
     }
     if (!cost || cost < 1) {
         response.succeess = false
-        response.massages.push('please enter a valid number')
+        response.messages.push('please enter a valid number')
     }
     if (!(/^(((\d{4})(-)(0[13578]|10|12)(-)(0[1-9]|[12][0-9]|3[01]))|((\d{4})(-)(0[469]|11)(-)([0][1-9]|[12][0-9]|30))|((\d{4})(-)(02)(-)(0[1-9]|1[0-9]|2[0-8]))|(([02468][048]00)(-)(02)(-)(29))|(([13579][26]00)(-)(02)(-)(29))|(([0-9][0-9][0][48])(-)(02)(-)(29))|(([0-9][0-9][2468][048])(-)(02)(-)(29))|(([0-9][0-9][13579][26])(-)(02)(-)(29)))(\s([0-1][0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9]))$/.test(date))) {
         response.succeess = false,
-        response.massages.push('please check your date')
+        response.messages.push('please check your date')
     }
     if (!response.succeess) {
         res.send(response)
@@ -46,7 +46,7 @@ var store = async (req, res, next) => {
         include: models.Photo
     })
     response.data = tripTransformer(newTrip)
-    response.massages.push('done')
+    response.messages.push('done')
     res.send(response)
 }
 var index = async function (req, res, next) {
@@ -110,7 +110,7 @@ var update = async (req, res, next) => {
 
     var response = {
         succeess: true,
-        massages: [],
+        messages: [],
         data: {}
     }
 
@@ -121,15 +121,15 @@ var update = async (req, res, next) => {
 
     if (title.length < 3) {
         response.succeess = false,
-            response.massages.push('please check your title')
+            response.messages.push('please check your title')
     }
     if (cost.length < 0) {
         response.succeess = false,
-            response.massages.push('please enter a valid number')
+            response.messages.push('please enter a valid number')
     }
     if (date.length < 10) {
         response.succeess = false,
-            response.massages.push('please check your date')
+            response.messages.push('please check your date')
     }
     if (!response.succeess) {
         res.send(response)
@@ -147,7 +147,7 @@ var update = async (req, res, next) => {
         }
     })
     response.data = tripTransformer(updateTrip)
-    response.massages.push('done')
+    response.messages.push('done')
     res.send(response)
 }
 module.exports = {
